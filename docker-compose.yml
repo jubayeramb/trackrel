@@ -1,0 +1,33 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: trackrel
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+  lightpanda:
+    image: lightpanda/browser:nightly
+    restart: unless-stopped
+    command: serve --host 0.0.0.0 --port 9222 --timeout 30 --log_level info
+    ports:
+      - "9222:9222"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:9222/json/version"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  postgres_data:

@@ -1,0 +1,21 @@
+{
+  "name": "@trackrel/web",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "echo 'web build placeholder'",
+    "dev": "echo 'web dev placeholder'",
+    "lint": "echo 'web lint placeholder'",
+    "check-types": "tsc --noEmit",
+    "clean": "rm -rf .next dist"
+  },
+  "dependencies": {
+    "@trackrel/db": "workspace:*",
+    "@trackrel/ui": "workspace:*",
+    "@trackrel/logger": "workspace:*"
+  },
+  "devDependencies": {
+    "@trackrel/tsconfig": "workspace:*",
+    "typescript": "^5.8.3"
+  }
+}

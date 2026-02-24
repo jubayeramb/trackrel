@@ -1,0 +1,21 @@
+{
+  "name": "@trackrel/scraper",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev": "node --watch dist/index.js",
+    "lint": "echo 'scraper lint placeholder'",
+    "check-types": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@trackrel/db": "workspace:*",
+    "@trackrel/logger": "workspace:*"
+  },
+  "devDependencies": {
+    "@trackrel/tsconfig": "workspace:*",
+    "typescript": "^5.8.3"
+  }
+}
