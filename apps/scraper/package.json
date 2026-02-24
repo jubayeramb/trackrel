@@ -12,7 +12,10 @@
   },
   "dependencies": {
     "@trackrel/db": "workspace:*",
-    "@trackrel/logger": "workspace:*"
+    "@trackrel/logger": "workspace:*",
+    "bullmq": "^5.70.1",
+    "ioredis": "^5.9.3",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@trackrel/tsconfig": "workspace:*",
