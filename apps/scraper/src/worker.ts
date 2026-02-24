@@ -2,6 +2,8 @@ import { Worker, Job, UnrecoverableError } from "bullmq";
 import { createHash } from "node:crypto";
 import { workerConnection } from "./connection.js";
 import { SCRAPE_QUEUE_NAME } from "./queue.js";
+import { fetchPage, FetchPageError } from "./browser.js";
+import { extractText } from "./sanitize.js";
 import type { ScrapeJobData, ScrapeJobResult } from "./types.js";
 
 /**
@@ -13,9 +15,9 @@ function computeHash(text: string): string {
 
 /**
  * Process a single scrape job:
- * 1. Fetch page via LightPanda (placeholder — Unit 4 will add fetchPage)
- * 2. Extract text using CSS selector
- * 3. Hash the text
+ * 1. Fetch page HTML via LightPanda CDP
+ * 2. Extract text using the stored CSS selector
+ * 3. Hash the text (SHA-256)
  * 4. Compare with last known hash
  * 5. Return result with change detection
  */
@@ -28,16 +30,34 @@ async function processScrapeJob(
 
   const start = Date.now();
 
-  // Placeholder — fetchPage will be implemented in Unit 4
-  // For now, throw to indicate it's not yet wired up
-  const detectedText = `placeholder: ${url} -> ${selector}`;
+  // Fetch rendered HTML via LightPanda CDP connection
+  let result;
+  try {
+    result = await fetchPage(url);
+  } catch (err) {
+    if (err instanceof FetchPageError && err.reason === "http_error") {
+      // Permanent HTTP errors (403, 404) — don't retry
+      throw new UnrecoverableError(`HTTP error: ${err.message}`);
+    }
+    throw err; // Timeouts and network errors will be retried by BullMQ
+  }
+
+  await job.updateProgress(50);
+
+  // Extract text using the monitor's CSS selector
+  const detectedText = extractText(result.html, selector);
+  if (detectedText === null) {
+    throw new UnrecoverableError(
+      `Selector "${selector}" matched no elements on ${url}`,
+    );
+  }
 
   const hash = computeHash(detectedText);
   const responseTimeMs = Date.now() - start;
 
   await job.updateProgress(90);
 
-  // TODO: Compare with DB last_hash and update — will be wired in later units
+  // TODO: Compare with DB last_hash and update — will be wired when DB connection is added
   const changed = false;
 
   return { detectedText, hash, changed, responseTimeMs };

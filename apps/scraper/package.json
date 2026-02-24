@@ -14,7 +14,9 @@
     "@trackrel/db": "workspace:*",
     "@trackrel/logger": "workspace:*",
     "bullmq": "^5.70.1",
+    "cheerio": "^1.2.0",
     "ioredis": "^5.9.3",
+    "playwright-core": "^1.58.2",
     "zod": "^4.3.6"
   },
   "devDependencies": {
