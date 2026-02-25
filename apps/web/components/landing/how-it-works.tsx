@@ -45,7 +45,7 @@ export function HowItWorks() {
                 </div>
                 <h3 className="font-display text-xl font-bold">AI Selection</h3>
                 <p className="mt-3 text-muted-foreground leading-relaxed">
-                  Trackrel's AI automatically generates robust CSS selectors to watch the specific content you care about.
+                  Trackrel&apos;s AI automatically generates robust CSS selectors to watch the specific content you care about.
                 </p>
               </div>
             </div>

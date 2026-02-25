@@ -1,5 +1,5 @@
-import { Badge, Button, Card, Separator } from "@trackrel/ui";
-import { CheckCircle2, Clock, MoreHorizontal, Play, Settings, Trash2, ExternalLink } from "lucide-react";
+import { Badge, Button } from "@trackrel/ui";
+import { CheckCircle2, Clock, MoreHorizontal, Play, Settings, ExternalLink } from "lucide-react";
 
 export function ProductPreview() {
   return (

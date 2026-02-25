@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Button } from "@trackrel/ui";
 import { Activity } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export function Navbar() {
   return (
@@ -21,7 +22,8 @@ export function Navbar() {
           <Link href="#pricing" className="transition-colors hover:text-foreground">Pricing</Link>
         </nav>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
           <Link href="/login" className="hidden text-sm font-medium text-muted-foreground transition-colors hover:text-foreground sm:block">
             Log in
           </Link>

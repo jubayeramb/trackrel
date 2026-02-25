@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Button } from "@trackrel/ui";
-import { ArrowRight, MousePointerClick, BellRing, Zap } from "lucide-react";
+import { ArrowRight, MousePointerClick, BellRing } from "lucide-react";
+import { AnimatedBadge } from "./animated-badge";
 
 export function Hero() {
   return (
@@ -12,10 +13,7 @@ export function Hero() {
 
       <div className="container mx-auto px-4 md:px-8">
         <div className="mx-auto max-w-4xl text-center">
-          <div className="mb-6 inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
-            <Zap className="mr-2 h-4 w-4" />
-            <span>Smart Website Change Detection</span>
-          </div>
+          <AnimatedBadge />
           
           <h1 className="font-display mb-8 text-5xl font-extrabold tracking-tight text-foreground sm:text-6xl lg:text-7xl">
             Monitor any website. <br className="hidden sm:block" />
@@ -23,7 +21,7 @@ export function Hero() {
           </h1>
           
           <p className="mx-auto mb-10 max-w-2xl text-lg text-muted-foreground sm:text-xl leading-relaxed">
-            Trackrel's AI auto-generates CSS selectors to watch specific page elements. 
+            Trackrel&apos;s AI auto-generates CSS selectors to watch specific page elements.
             Track competitor prices, API docs, or stock status without writing a single line of code.
           </p>
           
@@ -79,7 +77,7 @@ export function Hero() {
                     <div className="h-4 w-3/4 rounded bg-muted"></div>
                     <div className="mt-2 h-4 w-1/2 rounded bg-muted"></div>
                     <div className="mt-6 flex items-center gap-2">
-                      <div className="h-8 w-24 rounded bg-red-100 text-xs font-medium text-red-800 flex items-center justify-center line-through decoration-red-800/50">$299.00</div>
+                      <div className="h-8 w-24 rounded bg-red-500/10 text-xs font-medium text-red-600 dark:text-red-400 flex items-center justify-center line-through decoration-red-600/50 dark:decoration-red-400/50">$299.00</div>
                     </div>
                   </div>
                 </div>
@@ -96,7 +94,7 @@ export function Hero() {
                     <div className="h-4 w-3/4 rounded bg-muted"></div>
                     <div className="mt-2 h-4 w-1/2 rounded bg-muted"></div>
                     <div className="mt-6 flex items-center gap-2">
-                      <div className="h-8 w-24 rounded bg-green-100 text-xs font-medium text-green-800 flex items-center justify-center">$249.00</div>
+                      <div className="h-8 w-24 rounded bg-green-500/10 text-xs font-medium text-green-600 dark:text-green-400 flex items-center justify-center">$249.00</div>
                       <div className="h-6 px-2 rounded-full bg-primary/20 text-[10px] font-bold text-primary flex items-center justify-center">PRICE DROP</div>
                     </div>
                   </div>

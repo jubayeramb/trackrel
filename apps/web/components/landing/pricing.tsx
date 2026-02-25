@@ -14,10 +14,10 @@ export function Pricing() {
           </p>
         </div>
 
-        <div className="mx-auto grid max-w-5xl gap-8 md:grid-cols-2 lg:gap-12">
+        <div className="mx-auto grid max-w-5xl gap-8 pt-6 md:grid-cols-2 lg:gap-12">
           {/* Free Tier */}
-          <Card className="flex flex-col border-border/50 bg-card shadow-sm transition-all hover:shadow-md">
-            <CardHeader className="pb-8 pt-10">
+          <Card className="flex flex-col border-border/50 bg-card shadow-sm transition-all hover:shadow-md hover:border-border">
+            <CardHeader className="px-8 pb-6 pt-8">
               <CardTitle className="font-display text-2xl">Free</CardTitle>
               <CardDescription className="mt-2 text-base">Perfect for personal projects and trying out Trackrel.</CardDescription>
               <div className="mt-6 flex items-baseline text-5xl font-extrabold">
@@ -25,7 +25,7 @@ export function Pricing() {
                 <span className="ml-1 text-xl font-medium text-muted-foreground">/mo</span>
               </div>
             </CardHeader>
-            <CardContent className="flex-1">
+            <CardContent className="flex-1 px-8">
               <ul className="space-y-4 text-sm text-muted-foreground">
                 <li className="flex items-center gap-3">
                   <Check className="h-5 w-5 text-primary" />
@@ -49,7 +49,7 @@ export function Pricing() {
                 </li>
               </ul>
             </CardContent>
-            <CardFooter className="pb-10">
+            <CardFooter className="px-8 pb-8 pt-4">
               <Button variant="outline" className="w-full h-12 text-base font-semibold" asChild>
                 <a href="/signup">Get Started Free</a>
               </Button>
@@ -57,11 +57,11 @@ export function Pricing() {
           </Card>
 
           {/* Pro Tier */}
-          <Card className="relative flex flex-col border-primary/50 bg-card shadow-lg shadow-primary/5 transition-all hover:shadow-xl hover:shadow-primary/10">
-            <div className="absolute -top-5 left-0 right-0 mx-auto w-fit rounded-full bg-primary px-4 py-1 text-sm font-bold text-primary-foreground shadow-sm">
+          <Card className="relative flex flex-col overflow-visible border-primary/50 bg-card shadow-lg shadow-primary/5 transition-all hover:shadow-xl hover:shadow-primary/10">
+            <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-10 rounded-full bg-primary px-4 py-1 text-xs font-bold tracking-wide uppercase text-primary-foreground shadow-md">
               Most Popular
             </div>
-            <CardHeader className="pb-8 pt-10">
+            <CardHeader className="px-8 pb-6 pt-8">
               <CardTitle className="font-display text-2xl">Pro</CardTitle>
               <CardDescription className="mt-2 text-base">For professionals and teams who need reliable monitoring.</CardDescription>
               <div className="mt-6 flex items-baseline text-5xl font-extrabold">
@@ -69,7 +69,7 @@ export function Pricing() {
                 <span className="ml-1 text-xl font-medium text-muted-foreground">/mo</span>
               </div>
             </CardHeader>
-            <CardContent className="flex-1">
+            <CardContent className="flex-1 px-8">
               <ul className="space-y-4 text-sm text-muted-foreground">
                 <li className="flex items-center gap-3">
                   <Check className="h-5 w-5 text-primary" />
@@ -97,7 +97,7 @@ export function Pricing() {
                 </li>
               </ul>
             </CardContent>
-            <CardFooter className="pb-10">
+            <CardFooter className="px-8 pb-8 pt-4">
               <Button className="w-full h-12 text-base font-semibold shadow-md" asChild>
                 <a href="/signup">Start Pro Trial</a>
               </Button>
