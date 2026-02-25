@@ -11,6 +11,18 @@
     "./schema": {
       "types": "./src/schema.ts",
       "default": "./dist/schema.js"
+    },
+    "./validation": {
+      "types": "./src/validation.ts",
+      "default": "./dist/validation.js"
+    },
+    "./types": {
+      "types": "./src/types.ts",
+      "default": "./dist/types.js"
+    },
+    "./client": {
+      "types": "./src/client.ts",
+      "default": "./dist/client.js"
     }
   },
   "scripts": {
@@ -25,6 +37,9 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
-    "drizzle-orm": "^0.45.1"
+    "better-auth": "^1.4.19",
+    "drizzle-orm": "^0.45.1",
+    "postgres": "^3.4.8",
+    "zod": "^4.3.6"
   }
 }
