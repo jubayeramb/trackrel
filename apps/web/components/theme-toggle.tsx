@@ -23,18 +23,26 @@ export function ThemeToggle() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-9 w-9" aria-label="Toggle theme">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-9 w-9"
+          aria-label="Toggle theme"
+        >
           {mounted && theme === "dark" ? (
             <Moon className="h-4 w-4" />
           ) : mounted && theme === "light" ? (
             <Sun className="h-4 w-4" />
           ) : (
-            <Sun className="h-4 w-4" />
+            <Monitor className="h-4 w-4" />
           )}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-36">
-        <DropdownMenuRadioGroup value={mounted ? (theme ?? "system") : "system"} onValueChange={setTheme}>
+        <DropdownMenuRadioGroup
+          value={mounted ? (theme ?? "system") : "system"}
+          onValueChange={setTheme}
+        >
           <DropdownMenuRadioItem value="light" className="gap-2">
             <Sun className="h-4 w-4" />
             Light
