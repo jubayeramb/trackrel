@@ -1,4 +1,5 @@
 import { Badge, Button } from "@trackrel/ui";
+import { Logo } from "@/components/logo";
 import { CheckCircle2, Clock, MoreHorizontal, Play, Settings, ExternalLink } from "lucide-react";
 
 export function ProductPreview() {
@@ -32,9 +33,7 @@ export function ProductPreview() {
             {/* Sidebar */}
             <div className="hidden w-64 flex-col border-r border-border/50 bg-muted/10 p-4 md:flex">
               <div className="mb-8 flex items-center gap-2 px-2">
-                <div className="h-6 w-6 rounded bg-primary text-primary-foreground flex items-center justify-center">
-                  <span className="font-bold text-xs">T</span>
-                </div>
+                <Logo size={20} className="text-primary" />
                 <span className="font-display font-semibold">Trackrel</span>
               </div>
               <nav className="space-y-1">

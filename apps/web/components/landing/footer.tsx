@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Activity, Github, Twitter, Linkedin } from "lucide-react";
+import { Logo } from "@/components/logo";
+import { Github, Twitter, Linkedin } from "lucide-react";
 
 export function Footer() {
   return (
@@ -8,9 +9,7 @@ export function Footer() {
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           <div className="flex flex-col gap-4">
             <Link href="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                <Activity className="h-5 w-5" />
-              </div>
+              <Logo size={28} className="text-primary" />
               <span className="font-display text-xl font-bold tracking-tight">Trackrel</span>
             </Link>
             <p className="text-sm text-muted-foreground max-w-xs leading-relaxed">

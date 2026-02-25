@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "@trackrel/ui";
-import { Activity } from "lucide-react";
+import { Logo } from "@/components/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 export function Navbar() {
@@ -9,9 +9,7 @@ export function Navbar() {
       <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-8">
         <div className="flex items-center gap-2">
           <Link href="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <Activity className="h-5 w-5" />
-            </div>
+            <Logo size={28} className="text-primary" />
             <span className="font-display text-xl font-bold tracking-tight">Trackrel</span>
           </Link>
         </div>
