@@ -1,7 +1,10 @@
 {
   "extends": "@trackrel/tsconfig/nextjs.json",
   "compilerOptions": {
-    "outDir": "dist"
+    "jsx": "react-jsx",
+    "paths": {
+      "@ui/*": ["./src/*"]
+    }
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]
