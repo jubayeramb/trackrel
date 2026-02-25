@@ -23,5 +23,8 @@
     "@trackrel/tsconfig": "workspace:*",
     "drizzle-kit": "^0.31.9",
     "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.45.1"
   }
 }
