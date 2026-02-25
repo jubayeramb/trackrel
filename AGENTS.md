@@ -23,7 +23,7 @@ pnpm clean                    # Remove all build artifacts
 pnpm --filter @trackrel/scraper build        # tsc → dist/
 pnpm --filter @trackrel/scraper dev          # node --watch dist/index.js
 pnpm --filter @trackrel/scraper check-types  # tsc --noEmit
-pnpm --filter @trackrel/web build            # (placeholder)
+pnpm --filter @trackrel/web build            # next build
 pnpm --filter @trackrel/web check-types      # tsc --noEmit
 pnpm --filter @trackrel/db build             # tsc → dist/
 ```
@@ -48,6 +48,29 @@ cp .env.example .env           # Create local env file (DATABASE_URL, REDIS_HOST
 ```bash
 pnpm add <pkg> --filter <workspace>   # e.g. pnpm add zod --filter @trackrel/scraper
 # NEVER install globally. NEVER use npm/yarn.
+```
+
+### Shadcn UI Components
+
+```bash
+# Add a component (ALWAYS run from apps/web, not packages/ui)
+cd apps/web && pnpm dlx shadcn@latest add <component-name>
+# CLI auto-routes: UI primitives → packages/ui, app blocks → apps/web/components
+```
+
+After adding a component, export it from the barrel file:
+
+```typescript
+// packages/ui/src/index.ts
+export * from "./components/<component-name>";
+```
+
+Import in app code:
+
+```typescript
+import { Button } from "@trackrel/ui";
+// or deep import:
+import { Button } from "@trackrel/ui/components/button";
 ```
 
 ## 2. Architecture & Directory Structure

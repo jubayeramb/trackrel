@@ -4,7 +4,8 @@
     "lib": ["dom", "dom.iterable", "esnext"],
     "jsx": "react-jsx",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@trackrel/ui/*": ["../../packages/ui/src/*"]
     }
   },
   "include": [
