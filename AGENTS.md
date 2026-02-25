@@ -1,134 +1,194 @@
 # AGENTS.md
 
-> **SYSTEM CONTEXT FOR AI AGENTS**
-> This document serves as the **Master Instruction Set** for all AI agents contributing to `trackrel`. You must strictly adhere to the technology stack, architectural patterns, and coding standards defined below. Do not introduce new frameworks or deviate from the "Micro-SaaS" philosophy without explicit user approval.
+> System context for AI agents working on **Trackrel** — a website change detection Micro-SaaS.
+> Strictly follow the stack, patterns, and conventions below. Do not introduce new frameworks without explicit approval.
 
----
+## 1. Quick Reference — Commands
 
-## 1. Project Overview
+### Monorepo (pnpm + Turborepo)
 
-**Name:** Trackrel
-**Type:** Micro-SaaS / B2B & B2C Tool
-**Core Value Proposition:** A website change detection service that alerts users when specific content on a webpage changes (e.g., price drops, text updates, status changes).
-**Key Differentiator:** "Frictionless Onboarding" using an AI-powered CSS Selector generator (Gemini 1.5 Flash) to abstract the DOM complexity for non-technical users, with a fallback to a Browser Extension for power users.
-
----
-
-## 2. Tech Stack & Architecture (Strict)
-
-### Monorepo Structure
-
-- **Manager:** `pnpm` (Workspaces enabled)
-- **Build System:** `turborepo`
-- **Local Runtime:** `bun` (Use for scripts, dev server, and fast package installation)
-- **Production Runtime:** `Node.js 20+` (Required for stable worker execution in Docker)
-
-### Core Technologies
-
-- **Frontend:** Next.js 16 (App Router, React Server Components)
-- **Backend Worker:** Node.js (TypeScript)
-- **Database:** PostgreSQL
-- **ORM:** Drizzle ORM (with `drizzle-kit` for migrations)
-- **Queue System:** BullMQ (Redis required) — _Critical for managing scrape jobs._
-- **Scraping Engine:**
-  - `LightPanda` (A Zig-based true headless browser, running as a standalone CDP server. Highly memory efficient).
-  - `playwright-core` (Used to connect to LightPanda via Chrome DevTools Protocol. Do NOT use the standard `playwright` package to avoid downloading Chromium binaries).
-  - `Cheerio` (HTML parsing & sanitization).
-- **AI Integration:** Google Gemini 1.5 Flash (via Vercel AI SDK or Google Generative AI SDK)
-- **Styling:** Tailwind CSS + Shadcn/UI
-- **Validation:** Zod
-
-### Infrastructure (Hybrid Model - Optimized for Cost)
-
-- **Frontend:** Deployed to **Cloudflare Pages** (Static/Edge).
-- **Database:** **Neon.tech** or **Supabase** (Managed Postgres).
-- **Worker Node:** Docker container deployed on a cheap **VPS** (DigitalOcean/Hetzner/Hostinger).
-  - _Constraint:_ The worker handles all heavy lifting (LightPanda/Redis). The frontend serves only UI and API proxying.
-
----
-
-## 3. Directory Structure (Monorepo)
-
-```text
-/
-├── apps/
-│   ├── web/                 # Next.js App Router (Dashboard + Marketing)
-│   └── scraper/             # Node.js + BullMQ + Playwright-Core connecting to LightPanda
-├── packages/
-│   ├── db/                  # Drizzle ORM schema & connection logic (Shared)
-│   ├── ui/                  # Shared UI components (Shadcn)
-│   ├── config/              # Shared TSConfig, ESLint, Tailwind config
-│   └── logger/              # Shared structured logging
-├── tools/                   # Browser Extension (Chrome/Manifest V3)
-├── docker-compose.yml       # Local dev: Redis, Postgres, LightPanda Image
-└── package.json             # pnpm workspace root
+```bash
+pnpm install                  # Install all workspace dependencies
+pnpm build                    # Build all workspaces (dependency-ordered via turbo)
+pnpm dev                      # Start all dev servers (persistent, non-cached)
+pnpm check-types              # Type-check all workspaces
+pnpm lint                     # Lint all workspaces (placeholder — not yet configured)
+pnpm test                     # Run tests across all workspaces (no test framework yet)
+pnpm clean                    # Remove all build artifacts
 ```
 
----
+### Per-Workspace
 
-## 4. Feature Specifications & Implementation Rules
+```bash
+pnpm --filter @trackrel/scraper build        # tsc → dist/
+pnpm --filter @trackrel/scraper dev          # node --watch dist/index.js
+pnpm --filter @trackrel/scraper check-types  # tsc --noEmit
+pnpm --filter @trackrel/web build            # (placeholder)
+pnpm --filter @trackrel/web check-types      # tsc --noEmit
+pnpm --filter @trackrel/db build             # tsc → dist/
+```
 
-### A. The "Smart Selector" (AI Agent Task)
+### Database (Drizzle — run from packages/db)
 
-**Objective:** Allow users to type "Track the price" instead of finding `.product-price`.
-**Implementation Flow:**
+```bash
+pnpm --filter @trackrel/db drizzle-kit generate   # Generate migration from schema changes
+pnpm --filter @trackrel/db drizzle-kit migrate     # Apply pending migrations
+pnpm --filter @trackrel/db drizzle-kit studio      # Open Drizzle Studio GUI
+```
 
-1.  **Input:** User provides URL + Prompt (e.g., "Price").
-2.  **Fetch:** `scraper` fetches HTML via LightPanda.
-3.  **Sanitize:** Use `Cheerio` to strip `<script>`, `<style>`, `<svg>`, `<img>`, and comments to reduce token count.
-4.  **AI Request:** Send sanitized HTML to **Gemini 1.5 Flash**.
-    - _System Prompt:_ "Return a JSON object `{ selector: string }` representing the most stable unique CSS selector for the user's goal."
-5.  **Verify:** Immediate feedback loop—highlight the found text to the user.
-6.  **Upsell:** Display: _"Not accurate? Use our Browser Extension for 100% precision."_
+### Local Infrastructure
 
-### B. The Scraper Worker (Node.js + LightPanda)
+```bash
+docker compose up -d           # Start Postgres (5432), Redis (6379), LightPanda (9222)
+cp .env.example .env           # Create local env file (DATABASE_URL, REDIS_HOST, LIGHTPANDA_URL)
+```
 
-**Objective:** Robust, cron-based monitoring with an ultra-low memory footprint.
-**Implementation Rules:**
+### Package Management
 
-- **Queue:** Use `BullMQ` to schedule checks.
-- **Connection Pattern:** Connect to the LightPanda browser using `chromium.connectOverCDP({ endpointURL: 'ws://127.0.0.1:9222' })`.
-- **No Visuals:** Do not rely on visual layout features (like screenshots or calculating x/y coordinates). LightPanda does not render layout; it only executes JS and builds the DOM. Use strict CSS selector querying.
-- **Logic:**
-  1.  Fetch page via LightPanda.
-  2.  Extract text using the stored CSS selector.
-  3.  Hash the text (SHA-256).
-  4.  Compare with `last_hash` in DB.
-  5.  If different -> Update DB -> Trigger Notification (Email/Webhook).
+```bash
+pnpm add <pkg> --filter <workspace>   # e.g. pnpm add zod --filter @trackrel/scraper
+# NEVER install globally. NEVER use npm/yarn.
+```
 
-### C. Database Schema (Drizzle)
+## 2. Architecture & Directory Structure
 
-- **Users Table:** Standard auth fields.
-- **Monitors Table:**
-  - `id`, `user_id`, `url`, `selector`, `name`, `frequency_minutes`
-  - `last_check_at`, `last_hash`, `status` (active/paused/failing)
-- **CheckLogs Table:** (Timeseries-like data)
-  - `monitor_id`, `checked_at`, `response_time_ms`, `status_code`, `detected_text_snapshot`
+```text
+apps/
+  web/                   @trackrel/web       — Next.js 16 (App Router, RSC). Cloudflare Edge deploy.
+  scraper/               @trackrel/scraper   — Node.js worker. BullMQ + playwright-core → LightPanda CDP.
+packages/
+  db/                    @trackrel/db        — Drizzle ORM schema, relations, migrations. Shared.
+  ui/                    @trackrel/ui        — Shadcn/UI components. Shared.
+  logger/                @trackrel/logger    — Structured logging. Shared.
+  config/tsconfig/       @trackrel/tsconfig  — Shared base, node, nextjs TS configs.
+tools/                   Browser Extension (Chrome Manifest V3)
+```
 
----
+**Key constraints:**
+- All scraping runs in `apps/scraper` via BullMQ queue. The Next.js app CANNOT run Playwright.
+- Use `playwright-core` (not `playwright`) to connect to LightPanda via CDP. No Chromium downloads.
+- LightPanda has no layout rendering — no screenshots, no coordinates. CSS selector queries only.
 
-## 5. Development Guidelines for Agents
+## 3. Code Style
 
-### 1. Code Generation Rules
+### TypeScript Configuration
 
-- **Strict TypeScript:** No `any`. Use Zod for all API input validation and env variable validation.
-- **Functional Style:** Prefer pure functions where possible.
-- **Comments:** Explain _why_, not _what_, especially in complex scraping logic.
+- **Strict mode** enabled: `strict`, `noUncheckedIndexedAccess`, `noImplicitOverride`, `noImplicitReturns`, `noFallthroughCasesInSwitch`
+- **Target:** ES2022
+- **Module:** `NodeNext` for Node packages, `esnext` (bundler resolution) for Next.js/UI
+- **All packages are ESM** (`"type": "module"` in package.json)
 
-### 2. Package Management
+### Imports
 
-- Always use `pnpm add <package> --filter <workspace>` to install dependencies.
-- Never install global dependencies.
+```typescript
+// 1. External packages — named imports preferred; namespace when library expects it
+import { Worker, Job, UnrecoverableError } from "bullmq";
+import * as cheerio from "cheerio";
+// 2. Node built-ins with node: prefix
+import { createHash } from "node:crypto";
+// 3. Local imports — MUST use .js extension (ESM requirement)
+import { env } from "./config.js";
+// 4. Type-only imports — use `import type`
+import type { ScrapeJobData } from "./types.js";
+```
 
-### 3. "Agentic" Workflow Steps
+### Naming Conventions
 
-When asking an agent to implement a feature, refer to this sequence:
+| What | Convention | Example |
+|------|-----------|---------|
+| Files | kebab-case | `browser.ts`, `drizzle.config.ts` |
+| Variables, functions | camelCase | `fetchPage`, `workerConnection` |
+| Classes, interfaces, types | PascalCase | `FetchPageError`, `ScrapeJobData` |
+| Constants | SCREAMING_SNAKE_CASE | `SCRAPE_QUEUE_NAME`, `NAV_TIMEOUT_MS` |
+| DB table variables | camelCase | `checkLogs`, `monitors` |
+| DB columns | camelCase → snake_case mapping | `userId` → `user_id` |
+| Enums (Drizzle pgEnum) | snake_case values | `"active"`, `"paused"`, `"failing"` |
 
-1.  **Define Schema:** Update `packages/db` first.
-2.  **Logic:** Implement the core logic in `apps/scraper` or `packages/shared`.
-3.  **UI:** Build the interface in `apps/web`.
-4.  **Integration:** Connect UI to logic via Next.js Server Actions (tRPC is optional, Server Actions preferred for simplicity).
+### Exports
 
-### 4. Known Constraints
+- **Named exports only** — no default exports (exception: Drizzle config's `export default defineConfig`)
+- Re-export from `index.ts` barrel files: `export * from "./schema.js";`
 
-- **LightPanda Only:** The Next.js app runs on Cloudflare Edge/Serverless. It cannot run long-running processes or Playwright. All scraping **MUST** be offloaded to the `apps/scraper` via the queue.
+### Types & Validation
+
+```typescript
+// Interfaces for object shapes; union types for string literal discriminants
+export interface ScrapeJobData { monitorId: string; url: string; }
+export type FetchPageErrorReason = "timeout" | "network" | "http_error" | "cdp_connection";
+
+// Zod for runtime validation (env vars, API inputs) — parse at startup, fail fast
+const envSchema = z.object({ DATABASE_URL: z.string().url() });
+export const env = envSchema.parse(process.env);
+
+// Drizzle inferred types for DB rows
+export type InsertMonitor = typeof monitors.$inferInsert;
+export type SelectMonitor = typeof monitors.$inferSelect;
+```
+
+- **No `any`**. No `@ts-ignore`. No `@ts-expect-error`.
+- Shared types go in a dedicated `types.ts` file.
+
+### Functions
+
+- `function` declarations for top-level named/exported functions
+- Arrow functions for callbacks and event handlers
+- `async/await` throughout — no raw Promise chains
+- Pure functions where possible (`computeHash`, `sanitizeHtml`, `extractText`)
+
+### Error Handling
+
+```typescript
+// Custom Error subclass with typed reason discriminant
+export class FetchPageError extends Error {
+  public readonly reason: FetchPageErrorReason;
+  constructor(message: string, reason: FetchPageErrorReason) {
+    super(message); this.name = "FetchPageError"; this.reason = reason;
+  }
+}
+
+// BullMQ: UnrecoverableError = permanent failure (no retry). Regular throw = retryable.
+// Return null for non-fatal "not found" — don't throw.
+// Always clean up resources in finally blocks: page.close().catch(() => {})
+```
+
+### Comments
+
+- **JSDoc** `/** */` for function-level documentation
+- **Section dividers** with Unicode box-drawing: `// ── Error Types ────────`
+- Inline comments explain **why**, not what
+- No commented-out code
+
+### Drizzle Schema Patterns
+
+```typescript
+export const monitorStatusEnum = pgEnum("monitor_status", ["active", "paused", "failing"]);
+export const monitors = pgTable("monitors", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+}, (table) => [index("monitors_user_id_idx").on(table.userId)]);
+```
+
+## 4. Implementation Workflow
+
+When implementing a feature, follow this order:
+
+1. **Schema** — Update `packages/db/src/schema.ts` + relations + generate migration
+2. **Logic** — Implement in `apps/scraper` (worker logic) or shared packages
+3. **UI** — Build in `apps/web` using Server Actions (preferred over tRPC)
+4. **Verify** — `pnpm check-types` must pass. Run `pnpm build` before marking complete.
+
+## 5. Tech Stack (Do Not Deviate)
+
+| Layer | Technology | Notes |
+|-------|-----------|-------|
+| Frontend | Next.js 16, App Router, RSC | Cloudflare Pages deploy |
+| Styling | Tailwind CSS + Shadcn/UI | |
+| Backend Worker | Node.js + TypeScript | Docker on VPS |
+| Database | PostgreSQL (Neon/Supabase) | |
+| ORM | Drizzle ORM + drizzle-kit | |
+| Queue | BullMQ + ioredis | Redis required |
+| Scraping | playwright-core → LightPanda CDP | `chromium.connectOverCDP()` |
+| HTML parsing | Cheerio | Sanitize before AI calls |
+| AI | Gemini 1.5 Flash | CSS selector generation |
+| Validation | Zod | All inputs + env vars |
+| Monorepo | pnpm workspaces + Turborepo | |
