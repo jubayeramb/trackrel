@@ -1,5 +1,6 @@
 import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@trackrel/ui";
 import { Check } from "lucide-react";
+import { ROUTES } from "@/lib/routes";
 
 export function Pricing() {
   return (
@@ -51,7 +52,7 @@ export function Pricing() {
             </CardContent>
             <CardFooter className="px-8 pb-8 pt-4">
               <Button variant="outline" className="w-full h-12 text-base font-semibold" asChild>
-                <a href="/signup">Get Started Free</a>
+                <a href={ROUTES.auth.signup}>Get Started Free</a>
               </Button>
             </CardFooter>
           </Card>
@@ -99,7 +100,7 @@ export function Pricing() {
             </CardContent>
             <CardFooter className="px-8 pb-8 pt-4">
               <Button className="w-full h-12 text-base font-semibold shadow-md" asChild>
-                <a href="/signup">Start Pro Trial</a>
+                <a href={ROUTES.auth.signup}>Start Pro Trial</a>
               </Button>
             </CardFooter>
           </Card>

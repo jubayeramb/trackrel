@@ -2,8 +2,12 @@ import Link from "next/link";
 import { Button } from "@trackrel/ui";
 import { Logo } from "@/components/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { ROUTES } from "@/lib/routes";
+import { getSession } from "@/lib/auth-session";
 
-export function Navbar() {
+export async function Navbar() {
+  const session = await getSession();
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-8">
@@ -22,12 +26,20 @@ export function Navbar() {
 
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          <Link href="/login" className="hidden text-sm font-medium text-muted-foreground transition-colors hover:text-foreground sm:block">
-            Log in
-          </Link>
-          <Button asChild className="font-semibold shadow-sm">
-            <Link href="/signup">Get Started</Link>
-          </Button>
+          {session ? (
+            <Button asChild className="font-semibold shadow-sm">
+              <Link href={ROUTES.dashboard.home}>Dashboard</Link>
+            </Button>
+          ) : (
+            <>
+              <Link href={ROUTES.auth.login} className="hidden text-sm font-medium text-muted-foreground transition-colors hover:text-foreground sm:block">
+                Log in
+              </Link>
+              <Button asChild className="font-semibold shadow-sm">
+                <Link href={ROUTES.auth.signup}>Get Started</Link>
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </header>

@@ -19,65 +19,43 @@ import {
   InputGroupAddon,
   InputGroupButton,
 } from "@trackrel/ui";
-import { signIn } from "@/lib/auth-client";
-import { signInSchema, magicLinkSchema } from "@trackrel/db/validation";
+import { signUp, signIn } from "@/lib/auth-client";
+import { signUpSchema } from "@trackrel/db/validation";
+import { ROUTES } from "@/lib/routes";
 
-export default function LoginPage() {
+export default function SignUpPage() {
   const router = useRouter();
-  const [isEmailFlow, setIsEmailFlow] = useState(true);
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    setSuccessMessage(null);
     setIsLoading(true);
 
     try {
-      if (isEmailFlow) {
-        // Password login
-        const result = signInSchema.safeParse({ email, password });
-        if (!result.success) {
-          setError(result.error.issues[0]?.message || "Invalid input");
-          setIsLoading(false);
-          return;
-        }
+      const result = signUpSchema.safeParse({ name, email, password });
+      if (!result.success) {
+        setError(result.error.issues[0]?.message || "Invalid input");
+        setIsLoading(false);
+        return;
+      }
 
-        const { error: signInError } = await signIn.email({
-          email,
-          password,
-          callbackURL: "/dashboard",
-        });
+      const { error: signUpError } = await signUp.email({
+        name,
+        email,
+        password,
+        callbackURL: ROUTES.dashboard.home,
+      });
 
-        if (signInError) {
-          setError(signInError.message || "Failed to sign in");
-        } else {
-          router.push("/dashboard");
-        }
+      if (signUpError) {
+        setError(signUpError.message || "Failed to sign up");
       } else {
-        // Magic link
-        const result = magicLinkSchema.safeParse({ email });
-        if (!result.success) {
-          setError(result.error.issues[0]?.message || "Invalid email");
-          setIsLoading(false);
-          return;
-        }
-
-        const { error: magicLinkError } = await signIn.magicLink({
-          email,
-          callbackURL: "/dashboard",
-        });
-
-        if (magicLinkError) {
-          setError(magicLinkError.message || "Failed to send magic link");
-        } else {
-          setSuccessMessage("Check your email for a login link.");
-        }
+        router.push(ROUTES.dashboard.home);
       }
     } catch {
       setError("An unexpected error occurred");
@@ -92,7 +70,7 @@ export default function LoginPage() {
     try {
       await signIn.social({
         provider,
-        callbackURL: "/dashboard",
+        callbackURL: ROUTES.dashboard.home,
       });
     } catch {
       setError(`Failed to sign in with ${provider}`);
@@ -103,9 +81,9 @@ export default function LoginPage() {
   return (
     <Card className="w-full">
       <CardHeader className="text-center">
-        <CardTitle className="text-2xl font-display">Welcome back</CardTitle>
+        <CardTitle className="text-2xl font-display">Create an account</CardTitle>
         <CardDescription>
-          Sign in to your Trackrel account to continue
+          Sign up to start monitoring websites
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -165,6 +143,19 @@ export default function LoginPage() {
 
         <form onSubmit={handleEmailSubmit} className="space-y-4">
           <div className="space-y-2">
+            <Label htmlFor="name">Name</Label>
+            <Input
+              id="name"
+              type="text"
+              placeholder="John Doe"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              disabled={isLoading}
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input
               id="email"
@@ -177,74 +168,51 @@ export default function LoginPage() {
             />
           </div>
 
-          {isEmailFlow && (
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password">Password</Label>
-              </div>
-              <InputGroup>
-                <InputGroupInput
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+          <div className="space-y-2">
+            <Label htmlFor="password">Password</Label>
+            <InputGroup>
+              <InputGroupInput
+                id="password"
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={isLoading}
+                required
+              />
+              <InputGroupAddon align="inline-end">
+                <InputGroupButton
+                  type="button"
+                  variant="ghost"
+                  size="icon-xs"
+                  onClick={() => setShowPassword(!showPassword)}
                   disabled={isLoading}
-                  required
-                />
-                <InputGroupAddon align="inline-end">
-                  <InputGroupButton
-                    type="button"
-                    variant="ghost"
-                    size="icon-xs"
-                    onClick={() => setShowPassword(!showPassword)}
-                    disabled={isLoading}
-                    aria-label={showPassword ? "Hide password" : "Show password"}
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                  </InputGroupButton>
-                </InputGroupAddon>
-              </InputGroup>
-            </div>
-          )}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </InputGroupButton>
+              </InputGroupAddon>
+            </InputGroup>
+          </div>
 
           {error && <p className="text-sm text-destructive">{error}</p>}
-          {successMessage && (
-            <p className="text-sm text-green-600 dark:text-green-400">
-              {successMessage}
-            </p>
-          )}
 
           <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {isEmailFlow ? "Sign in" : "Send magic link"}
+            Create account
           </Button>
         </form>
 
-        <div className="flex items-center justify-center space-x-2 text-sm">
-          <button
-            type="button"
-            onClick={() => {
-              setIsEmailFlow(!isEmailFlow);
-              setError(null);
-              setSuccessMessage(null);
-            }}
-            className="text-muted-foreground hover:text-foreground underline underline-offset-4"
-          >
-            {isEmailFlow ? "Use magic link instead" : "Use password instead"}
-          </button>
-        </div>
-
         <div className="text-center text-sm text-muted-foreground">
-          Don&apos;t have an account?{" "}
+          Already have an account?{" "}
           <Link
-            href="/signup"
+            href={ROUTES.auth.login}
             className="text-primary underline underline-offset-4 hover:text-primary/90"
           >
-            Sign up
+            Sign in
           </Link>
         </div>
       </CardContent>

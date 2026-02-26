@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Button } from "@trackrel/ui";
 import { ArrowRight, MousePointerClick, BellRing } from "lucide-react";
 import { AnimatedBadge } from "./animated-badge";
+import { ROUTES } from "@/lib/routes";
 
 export function Hero() {
   return (
@@ -27,7 +28,7 @@ export function Hero() {
           
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Button size="lg" className="h-14 px-8 text-base font-semibold shadow-lg shadow-primary/20 transition-transform hover:-translate-y-0.5" asChild>
-              <Link href="/signup">
+              <Link href={ROUTES.auth.signup}>
                 Start Monitoring Free
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
