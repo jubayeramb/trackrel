@@ -1,17 +1,18 @@
 import { scrapeWorker } from "./worker.js";
+import { startScheduler, stopScheduler } from "./scheduler.js";
 import { workerConnection, queueConnection } from "./connection.js";
 
 async function main(): Promise<void> {
-  console.log("Scraper worker started");
+  startScheduler();
+  console.log("Scraper started: worker + scheduler running");
 }
 
 async function gracefulShutdown(signal: string): Promise<void> {
   console.log(`Received ${signal}, shutting down...`);
 
-  // Stop accepting new jobs — waits for active jobs to finish
+  await stopScheduler();
   await scrapeWorker.close();
 
-  // Close Redis connections
   await workerConnection.quit();
   await queueConnection.quit();
 
@@ -28,6 +29,6 @@ process.on("uncaughtException", (err) => {
 });
 
 main().catch((err) => {
-  console.error("Failed to start worker:", err);
+  console.error("Failed to start:", err);
   process.exit(1);
 });
