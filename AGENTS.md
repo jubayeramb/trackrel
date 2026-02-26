@@ -134,6 +134,14 @@ import type { ScrapeJobData } from "./types.js";
 - **Named exports only** — no default exports (exception: Drizzle config's `export default defineConfig`)
 - Re-export from `index.ts` barrel files: `export * from "./schema.js";`
 
+### Component Organization
+
+- **Page-specific components** live in a `components/` directory alongside the page that uses them (colocation).
+  - Example: `app/(dashboard)/dashboard/monitors/components/monitor-card.tsx`
+- **Shared components** used across multiple pages go in the root `components/` directory (`apps/web/components/`).
+- **Atomic UI primitives** (shadcn/UI) always go in `packages/ui/` and are imported from `@trackrel/ui`.
+
+
 ### Types & Validation
 
 ```typescript
