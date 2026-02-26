@@ -107,6 +107,8 @@ tools/                   Browser Extension (Chrome Manifest V3)
 // 1. External packages — named imports preferred; namespace when library expects it
 import { Worker, Job, UnrecoverableError } from "bullmq";
 import * as cheerio from "cheerio";
+// Zod — ALWAYS use namespace import
+import * as z from "zod";
 // 2. Node built-ins with node: prefix
 import { createHash } from "node:crypto";
 // 3. Local imports — MUST use .js extension (ESM requirement)
