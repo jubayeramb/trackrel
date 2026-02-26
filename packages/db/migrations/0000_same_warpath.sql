@@ -1,9 +1,9 @@
 CREATE TYPE "public"."monitor_status" AS ENUM('active', 'paused', 'failing');--> statement-breakpoint
 CREATE TABLE "accounts" (
-	"id" text PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"account_id" text NOT NULL,
 	"provider_id" text NOT NULL,
-	"user_id" text NOT NULL,
+	"user_id" uuid NOT NULL,
 	"access_token" text,
 	"refresh_token" text,
 	"id_token" text,
@@ -16,8 +16,8 @@ CREATE TABLE "accounts" (
 );
 --> statement-breakpoint
 CREATE TABLE "check_logs" (
-	"id" text PRIMARY KEY NOT NULL,
-	"monitor_id" text NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"monitor_id" uuid NOT NULL,
 	"checked_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"response_time_ms" integer,
 	"status_code" integer,
@@ -25,8 +25,8 @@ CREATE TABLE "check_logs" (
 );
 --> statement-breakpoint
 CREATE TABLE "monitors" (
-	"id" text PRIMARY KEY NOT NULL,
-	"user_id" text NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"user_id" uuid NOT NULL,
 	"url" text NOT NULL,
 	"selector" text NOT NULL,
 	"name" varchar(256) NOT NULL,
@@ -39,19 +39,19 @@ CREATE TABLE "monitors" (
 );
 --> statement-breakpoint
 CREATE TABLE "sessions" (
-	"id" text PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"expires_at" timestamp with time zone NOT NULL,
 	"token" text NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"ip_address" text,
 	"user_agent" text,
-	"user_id" text NOT NULL,
+	"user_id" uuid NOT NULL,
 	CONSTRAINT "sessions_token_unique" UNIQUE("token")
 );
 --> statement-breakpoint
 CREATE TABLE "users" (
-	"id" text PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"name" text NOT NULL,
 	"email" text NOT NULL,
 	"email_verified" boolean DEFAULT false NOT NULL,
@@ -62,7 +62,7 @@ CREATE TABLE "users" (
 );
 --> statement-breakpoint
 CREATE TABLE "verifications" (
-	"id" text PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"identifier" text NOT NULL,
 	"value" text NOT NULL,
 	"expires_at" timestamp with time zone NOT NULL,

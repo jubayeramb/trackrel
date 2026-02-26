@@ -1,6 +1,7 @@
 import {
   pgTable,
   pgEnum,
+  uuid,
   text,
   varchar,
   integer,
@@ -20,7 +21,7 @@ export const monitorStatusEnum = pgEnum("monitor_status", [
 // ── Auth Tables (managed by better-auth) ──────────────────────────────────
 
 export const users = pgTable("users", {
-  id: text("id").primaryKey(),
+  id: uuid("id").primaryKey().defaultRandom(),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
   emailVerified: boolean("email_verified").notNull().default(false),
@@ -37,7 +38,7 @@ export const users = pgTable("users", {
 export const sessions = pgTable(
   "sessions",
   {
-    id: text("id").primaryKey(),
+    id: uuid("id").primaryKey().defaultRandom(),
     expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
     token: text("token").notNull().unique(),
     createdAt: timestamp("created_at", { withTimezone: true })
@@ -49,7 +50,7 @@ export const sessions = pgTable(
       .$onUpdate(() => new Date()),
     ipAddress: text("ip_address"),
     userAgent: text("user_agent"),
-    userId: text("user_id")
+    userId: uuid("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
   },
@@ -62,10 +63,10 @@ export const sessions = pgTable(
 export const accounts = pgTable(
   "accounts",
   {
-    id: text("id").primaryKey(),
+    id: uuid("id").primaryKey().defaultRandom(),
     accountId: text("account_id").notNull(),
     providerId: text("provider_id").notNull(),
-    userId: text("user_id")
+    userId: uuid("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     accessToken: text("access_token"),
@@ -91,7 +92,7 @@ export const accounts = pgTable(
 );
 
 export const verifications = pgTable("verifications", {
-  id: text("id").primaryKey(),
+  id: uuid("id").primaryKey().defaultRandom(),
   identifier: text("identifier").notNull(),
   value: text("value").notNull(),
   expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
@@ -106,10 +107,8 @@ export const verifications = pgTable("verifications", {
 export const monitors = pgTable(
   "monitors",
   {
-    id: text("id")
-      .primaryKey()
-      .$defaultFn(() => crypto.randomUUID()),
-    userId: text("user_id")
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     url: text("url").notNull(),
@@ -133,10 +132,8 @@ export const monitors = pgTable(
 export const checkLogs = pgTable(
   "check_logs",
   {
-    id: text("id")
-      .primaryKey()
-      .$defaultFn(() => crypto.randomUUID()),
-    monitorId: text("monitor_id")
+    id: uuid("id").primaryKey().defaultRandom(),
+    monitorId: uuid("monitor_id")
       .notNull()
       .references(() => monitors.id, { onDelete: "cascade" }),
     checkedAt: timestamp("checked_at", { withTimezone: true })

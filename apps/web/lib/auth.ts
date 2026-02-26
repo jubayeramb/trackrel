@@ -13,6 +13,11 @@ export const auth = betterAuth({
     usePlural: true,
     schema,
   }),
+  advanced: {
+    database: {
+      generateId: "uuid",
+    },
+  },
   emailAndPassword: {
     enabled: true,
   },
