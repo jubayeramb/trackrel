@@ -37,12 +37,22 @@ jobs:
       - name: Lint
         run: pnpm --filter @trackrel/web lint
 
-      - name: Build & Deploy
+      - name: Build
         working-directory: apps/web
-        run: pnpm exec opennextjs-cloudflare build && pnpm exec wrangler deploy
+        run: pnpm exec opennextjs-cloudflare build
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
           BETTER_AUTH_URL: ${{ vars.BETTER_AUTH_URL }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Migrate database
+        run: pnpm --filter @trackrel/db db:migrate
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Deploy to Cloudflare
+        working-directory: apps/web
+        run: pnpm exec wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

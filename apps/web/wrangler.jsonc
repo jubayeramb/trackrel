@@ -13,7 +13,14 @@
       "binding": "WORKER_SELF_REFERENCE",
       "service": "trackrel-web"
     }
-  ]
+  ],
+  "observability": {
+    "enabled": true,
+    "logs": {
+      "enabled": true,
+      "invocation_logs": true
+    }
+  }
   // Uncomment when R2 caching is needed:
   // "r2_buckets": [
   //   {

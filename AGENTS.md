@@ -31,9 +31,9 @@ pnpm --filter @trackrel/db build             # tsc → dist/
 ### Database (Drizzle — run from packages/db)
 
 ```bash
-pnpm --filter @trackrel/db drizzle-kit generate   # Generate migration from schema changes
-pnpm --filter @trackrel/db drizzle-kit migrate     # Apply pending migrations
-pnpm --filter @trackrel/db drizzle-kit studio      # Open Drizzle Studio GUI
+pnpm --filter @trackrel/db db:generate   # Generate migration from schema changes
+pnpm --filter @trackrel/db db:migrate     # Apply pending migrations
+pnpm --filter @trackrel/db db:studio      # Open Drizzle Studio GUI
 ```
 
 ### Local Infrastructure

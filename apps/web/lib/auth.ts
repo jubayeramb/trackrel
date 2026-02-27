@@ -2,10 +2,8 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
 import { magicLink } from "better-auth/plugins";
-import { createDb } from "@trackrel/db/client";
 import * as schema from "@trackrel/db";
-
-const db = createDb(process.env["DATABASE_URL"]!);
+import { db } from "@/lib/db";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {

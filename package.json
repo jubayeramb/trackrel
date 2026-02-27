@@ -15,6 +15,9 @@
     "typescript": "^5.8.3"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["esbuild", "workerd"]
+    "onlyBuiltDependencies": ["esbuild", "workerd"],
+    "overrides": {
+      "@neondatabase/serverless": "0.10.4"
+    }
   }
 }

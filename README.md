@@ -73,9 +73,9 @@ pnpm clean            # Remove build artifacts
 ```bash
 pnpm --filter @trackrel/web dev
 pnpm --filter @trackrel/scraper build
-pnpm --filter @trackrel/db drizzle-kit generate
-pnpm --filter @trackrel/db drizzle-kit migrate
-pnpm --filter @trackrel/db drizzle-kit studio
+pnpm --filter @trackrel/db db:generate
+pnpm --filter @trackrel/db db:migrate
+pnpm --filter @trackrel/db db:studio
 ```
 
 ### Adding shadcn Components

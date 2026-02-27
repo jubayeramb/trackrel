@@ -4,7 +4,10 @@ import { eq, and, desc } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { monitors, checkLogs } from "@trackrel/db";
 import type { SelectMonitor, SelectCheckLog } from "@trackrel/db";
-import { createMonitorSchema, updateMonitorSchema } from "@trackrel/db/validation";
+import {
+  createMonitorSchema,
+  updateMonitorSchema,
+} from "@trackrel/db/validation";
 import { db } from "@/lib/db";
 import { requireSession } from "@/lib/auth-session";
 import { ROUTES } from "@/lib/routes";
@@ -24,7 +27,10 @@ export async function createMonitor(
 
   const parsed = createMonitorSchema.safeParse(input);
   if (!parsed.success) {
-    return { success: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
+    return {
+      success: false,
+      error: parsed.error.issues[0]?.message ?? "Invalid input",
+    };
   }
 
   const [monitor] = await db
@@ -91,7 +97,10 @@ export async function updateMonitor(
 
   const parsed = updateMonitorSchema.safeParse(input);
   if (!parsed.success) {
-    return { success: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
+    return {
+      success: false,
+      error: parsed.error.issues[0]?.message ?? "Invalid input",
+    };
   }
 
   const [updated] = await db
@@ -113,15 +122,13 @@ export async function updateMonitor(
 
 // ── Delete ───────────────────────────────────────────────────────────────
 
-export async function deleteMonitor(
-  id: string,
-): Promise<ActionResult> {
+export async function deleteMonitor(id: string): Promise<ActionResult> {
   const session = await requireSession();
 
   const [deleted] = await db
     .delete(monitors)
     .where(and(eq(monitors.id, id), eq(monitors.userId, session.user.id)))
-    .returning({ id: monitors.id });
+    .returning();
 
   if (!deleted) {
     return { success: false, error: "Monitor not found" };
@@ -145,7 +152,9 @@ export async function getCheckLogs(
   const [monitor] = await db
     .select({ id: monitors.id })
     .from(monitors)
-    .where(and(eq(monitors.id, monitorId), eq(monitors.userId, session.user.id)));
+    .where(
+      and(eq(monitors.id, monitorId), eq(monitors.userId, session.user.id)),
+    );
 
   if (!monitor) {
     return { success: false, error: "Monitor not found" };
@@ -170,7 +179,9 @@ export interface DashboardStats {
   failingMonitors: number;
 }
 
-export async function getDashboardStats(): Promise<ActionResult<DashboardStats>> {
+export async function getDashboardStats(): Promise<
+  ActionResult<DashboardStats>
+> {
   const session = await requireSession();
 
   const userMonitors = await db
